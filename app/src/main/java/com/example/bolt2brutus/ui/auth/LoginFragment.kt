@@ -1,4 +1,4 @@
-package com.example.bolt2brutus
+package com.example.bolt2brutus.ui.auth
 
 import android.util.Log
 import android.os.Bundle
@@ -7,18 +7,20 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import com.example.bolt2brutus.activities.LoginActivity
+import android.widget.EditText
+import androidx.fragment.app.activityViewModels
+import com.example.bolt2brutus.R
+import com.example.bolt2brutus.viewmodel.AuthUiState
+import com.example.bolt2brutus.viewmodel.AuthViewModel
 
-/**
- * A simple [Fragment] subclass.
- * Use the [LoginFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
+/** Email and password login. Navigation after success is handled by [LoginActivity]. */
 class LoginFragment : Fragment() {
 
     companion object {
         private const val tag = "LoginFragment"
     }
+
+    private val authViewModel: AuthViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,6 +38,20 @@ class LoginFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val emailEditText = view.findViewById<EditText>(R.id.emailEditText)
+        val passwordEditText = view.findViewById<EditText>(R.id.passwordEditText)
+        val submitButton = view.findViewById<Button>(R.id.loginSubmitButton)
+
+        submitButton.setOnClickListener {
+            authViewModel.logIn(
+                emailEditText.text.toString(),
+                passwordEditText.text.toString(),
+            )
+        }
+
+        authViewModel.uiState.observe(viewLifecycleOwner) { state ->
+            submitButton.isEnabled = state !is AuthUiState.Loading
+        }
     }
 
     override fun onStart() {

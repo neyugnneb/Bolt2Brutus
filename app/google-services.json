@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "706505897843",
+    "project_id": "bolt2brutus",
+    "storage_bucket": "bolt2brutus.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:706505897843:android:3d6ea662dd48f872c7f706",
+        "android_client_info": {
+          "package_name": "com.example.bolt2brutus"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAZnG3WGYLd8W26Q9jt0i_GYBRBfapJzzo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

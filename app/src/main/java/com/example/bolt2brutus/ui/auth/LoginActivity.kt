@@ -1,14 +1,19 @@
-package com.example.bolt2brutus.activities
+package com.example.bolt2brutus.ui.auth
 
+import android.content.Intent
 import android.util.Log
 import android.os.Bundle
 import android.widget.Button
+import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.example.bolt2brutus.LoginFragment
+import androidx.fragment.app.Fragment
 import com.example.bolt2brutus.R
-import com.example.bolt2brutus.SignupFragment
+import com.example.bolt2brutus.ui.race.RaceActivity
+import com.example.bolt2brutus.viewmodel.AuthUiState
+import com.example.bolt2brutus.viewmodel.AuthViewModel
 
 class LoginActivity : AppCompatActivity() {
 
@@ -16,9 +21,17 @@ class LoginActivity : AppCompatActivity() {
         private const val tag = "LoginActivity"
     }
 
+    private val authViewModel: AuthViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(tag, "onCreate")
+
+        if (authViewModel.isSignedIn) {
+            openRaceScreen()
+            return
+        }
+
         setContentView(R.layout.activity_login)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -26,28 +39,40 @@ class LoginActivity : AppCompatActivity() {
             insets
         }
 
-        val loginFragment = LoginFragment()
-        val signupFragment = SignupFragment()
-
-        supportFragmentManager.beginTransaction().apply {
-            replace(R.id.flFragment, loginFragment)
-            commit()
+        if (savedInstanceState == null) {
+            showFragment(LoginFragment())
         }
 
         findViewById<Button>(R.id.logInButton).setOnClickListener {
-            supportFragmentManager.beginTransaction().apply {
-                replace(R.id.flFragment, loginFragment)
-                commit()
-            }
+            showFragment(LoginFragment())
         }
 
         findViewById<Button>(R.id.signUpButton).setOnClickListener {
-            supportFragmentManager.beginTransaction().apply {
-                replace(R.id.flFragment, signupFragment)
-                commit()
-            }
+            showFragment(SignupFragment())
         }
 
+        authViewModel.uiState.observe(this) { state ->
+            when (state) {
+                is AuthUiState.SignedIn -> openRaceScreen()
+                is AuthUiState.Error -> {
+                    Toast.makeText(this, state.message, Toast.LENGTH_LONG).show()
+                    authViewModel.errorShown()
+                }
+                else -> Unit
+            }
+        }
+    }
+
+    private fun showFragment(fragment: Fragment) {
+        supportFragmentManager.beginTransaction().apply {
+            replace(R.id.flFragment, fragment)
+            commit()
+        }
+    }
+
+    private fun openRaceScreen() {
+        startActivity(Intent(this, RaceActivity::class.java))
+        finish()
     }
 
     override fun onStart() {
