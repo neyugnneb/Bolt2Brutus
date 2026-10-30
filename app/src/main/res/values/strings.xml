@@ -13,4 +13,10 @@
     <string name="delete">Delete</string>
     <string name="log_out">Log out</string>
     <string name="delete_account">Delete account</string>
+    <string name="nav_races">Races</string>
+    <string name="nav_challenges">Challenges</string>
+    <string name="nav_profile">Profile</string>
+    <string name="profile_title">Profile &amp; Account</string>
+    <string name="challenges_title">Challenges</string>
+    <string name="no_challenges">No challenges yet</string>
 </resources>
