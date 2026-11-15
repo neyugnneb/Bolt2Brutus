@@ -9,6 +9,10 @@
         android:icon="@drawable/ic_emoji_events"
         android:title="@string/nav_challenges" />
     <item
+        android:id="@+id/nav_map"
+        android:icon="@drawable/ic_map"
+        android:title="@string/nav_map" />
+    <item
         android:id="@+id/nav_profile"
         android:icon="@drawable/ic_person"
         android:title="@string/nav_profile" />

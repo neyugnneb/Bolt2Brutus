@@ -15,8 +15,17 @@
     <string name="delete_account">Delete account</string>
     <string name="nav_races">Races</string>
     <string name="nav_challenges">Challenges</string>
+    <string name="nav_map">Map</string>
     <string name="nav_profile">Profile</string>
     <string name="profile_title">Profile &amp; Account</string>
     <string name="challenges_title">Challenges</string>
     <string name="no_challenges">No challenges yet</string>
+    <string name="map_statues">Browse statues</string>
+    <string name="map_statues_title">Columbus Brutus statues</string>
+    <string name="map_statue_at_site">%1$s · %2$s</string>
+    <string name="map_pin_location_note">Pins show approximate building locations.</string>
+    <string name="map_missing_key">Google Maps needs an API key. You can still browse statue locations.</string>
+    <string name="map_play_services_unavailable">Google Maps needs up-to-date Google Play services. You can still browse statue locations.</string>
+    <string name="map_access_business">Access is limited to posted building hours. The statue is in a working area.</string>
+    <string name="map_access_medical">Access is limited to posted building hours. Keep patients and patient care out of photos.</string>
 </resources>
