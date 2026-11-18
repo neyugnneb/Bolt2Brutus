@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.bolt2brutus.R
 import com.example.bolt2brutus.model.RaceAttempt
-import java.util.Locale
+import com.example.bolt2brutus.ui.formatElapsed
 
 /** Lists race attempts with buttons to finish an in-progress attempt or delete one. */
 class RaceAttemptAdapter(
@@ -39,13 +39,6 @@ class RaceAttemptAdapter(
         holder.finishButton.visibility = if (attempt.completed) View.GONE else View.VISIBLE
         holder.finishButton.setOnClickListener { onFinish(attempt) }
         holder.deleteButton.setOnClickListener { onDelete(attempt) }
-    }
-
-    private fun formatElapsed(ms: Long): String {
-        val minutes = ms / 60_000
-        val seconds = (ms % 60_000) / 1000
-        val hundredths = (ms % 1000) / 10
-        return String.format(Locale.US, "%d:%02d.%02d", minutes, seconds, hundredths)
     }
 
     private object DiffCallback : DiffUtil.ItemCallback<RaceAttempt>() {

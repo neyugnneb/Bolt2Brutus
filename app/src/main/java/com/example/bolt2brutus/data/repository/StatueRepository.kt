@@ -18,6 +18,8 @@ class StatueRepository(
     suspend fun get(statueId: String): Statue? =
         statues.document(statueId).get().await().toObject(Statue::class.java)
 
+    suspend fun getAll(): List<Statue> = statues.get().await().toObjects(Statue::class.java)
+
     /** Creates or replaces the statue. A blank [Statue.id] gets a generated ID. */
     suspend fun save(statue: Statue): String {
         val doc = if (statue.id.isBlank()) statues.document() else statues.document(statue.id)

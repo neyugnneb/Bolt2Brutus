@@ -18,7 +18,7 @@ class RaceRepository(
     suspend fun get(raceId: String): Race? =
         races.document(raceId).get().await().toObject(Race::class.java)
 
-    suspend fun isEmpty(): Boolean = races.limit(1).get().await().isEmpty
+    suspend fun getAll(): List<Race> = races.get().await().toObjects(Race::class.java)
 
     /** Creates or replaces the race. A blank [Race.id] gets a generated ID. */
     suspend fun save(race: Race): String {

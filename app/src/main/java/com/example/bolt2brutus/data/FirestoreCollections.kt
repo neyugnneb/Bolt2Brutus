@@ -6,6 +6,8 @@ object FirestoreCollections {
     const val STATUES = "statues"
     const val RACES = "races"
     const val RACE_ATTEMPTS = "raceAttempts"
+    const val STATUE_VISITS = "statueVisits"
     const val FRIENDSHIPS = "friendships"
     const val CHALLENGES = "challenges"
+    const val META = "meta"
 }

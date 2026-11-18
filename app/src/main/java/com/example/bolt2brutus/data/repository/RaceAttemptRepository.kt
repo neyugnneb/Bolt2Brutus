@@ -63,6 +63,14 @@ class RaceAttemptRepository(
             .limit(limit)
             .observeAll()
 
+    /** A user's completed attempts on one race. Equality filters only, so no composite index is needed. */
+    suspend fun getCompletedForUser(uid: String, raceId: String): List<RaceAttempt> =
+        attempts.whereEqualTo("userId", uid)
+            .whereEqualTo("raceId", raceId)
+            .whereEqualTo("completed", true)
+            .get().await()
+            .toObjects(RaceAttempt::class.java)
+
     suspend fun delete(attemptId: String) {
         attempts.document(attemptId).delete().await()
     }

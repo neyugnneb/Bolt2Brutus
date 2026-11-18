@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import com.example.bolt2brutus.R
 import com.example.bolt2brutus.ui.auth.LoginActivity
 import com.example.bolt2brutus.ui.challenge.ChallengesFragment
+import com.example.bolt2brutus.ui.leaderboard.LeaderboardFragment
 import com.example.bolt2brutus.ui.map.StatueMapFragment
 import com.example.bolt2brutus.ui.profile.ProfileFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -39,6 +40,10 @@ class RaceActivity : AppCompatActivity() {
             when (item.itemId) {
                 R.id.nav_races -> {
                     showFragment(RaceFragment())
+                    true
+                }
+                R.id.nav_leaderboard -> {
+                    showFragment(LeaderboardFragment())
                     true
                 }
                 R.id.nav_challenges -> {

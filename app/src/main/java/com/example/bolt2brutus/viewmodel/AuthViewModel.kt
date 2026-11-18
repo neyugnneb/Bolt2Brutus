@@ -13,6 +13,9 @@ sealed interface AuthUiState {
     data object Idle : AuthUiState
     data object Loading : AuthUiState
     data object SignedIn : AuthUiState
+
+    /** The account exists but its email is unconfirmed. [sent] is true when a link was just emailed. */
+    data class VerifyEmail(val email: String, val sent: Boolean) : AuthUiState
     data class Error(val message: String) : AuthUiState
 }
 
@@ -26,7 +29,7 @@ class AuthViewModel(
     val uiState: LiveData<AuthUiState> = _uiState
 
     val isSignedIn: Boolean
-        get() = authRepository.currentUserId != null
+        get() = authRepository.isSignedInAndVerified
 
     fun signUp(email: String, password: String, username: String) {
         if (email.isBlank() || password.isBlank() || username.isBlank()) {
@@ -36,6 +39,7 @@ class AuthViewModel(
         runAuth {
             val uid = authRepository.signUp(email.trim(), password)
             userRepository.create(User(uid = uid, email = email.trim(), username = username.trim()))
+            AuthUiState.VerifyEmail(email.trim(), sent = true)
         }
     }
 
@@ -44,20 +48,33 @@ class AuthViewModel(
             _uiState.value = AuthUiState.Error("Enter your email and password")
             return
         }
-        runAuth { authRepository.logIn(email.trim(), password) }
+        runAuth {
+            if (authRepository.logIn(email.trim(), password)) {
+                AuthUiState.SignedIn
+            } else {
+                AuthUiState.VerifyEmail(email.trim(), sent = false)
+            }
+        }
     }
 
-    /** Call after the UI has shown an error so it is not shown again on rotation. */
-    fun errorShown() {
-        if (_uiState.value is AuthUiState.Error) _uiState.value = AuthUiState.Idle
+    fun resendVerification() {
+        runAuth {
+            authRepository.resendVerification()
+            AuthUiState.VerifyEmail(authRepository.currentEmail.orEmpty(), sent = true)
+        }
     }
 
-    private fun runAuth(block: suspend () -> Unit) {
+    /** Call after the UI has shown an error or dialog so it is not shown again on rotation. */
+    fun messageShown() {
+        val state = _uiState.value
+        if (state is AuthUiState.Error || state is AuthUiState.VerifyEmail) _uiState.value = AuthUiState.Idle
+    }
+
+    private fun runAuth(block: suspend () -> AuthUiState) {
         _uiState.value = AuthUiState.Loading
         viewModelScope.launch {
             _uiState.value = try {
                 block()
-                AuthUiState.SignedIn
             } catch (e: Exception) {
                 AuthUiState.Error(e.message ?: "Something went wrong")
             }

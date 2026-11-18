@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.bolt2brutus.data.repository.AuthRepository
 import com.example.bolt2brutus.data.repository.RaceAttemptRepository
 import com.example.bolt2brutus.data.repository.RaceRepository
+import com.example.bolt2brutus.data.repository.StatueVisitRepository
 import com.example.bolt2brutus.data.repository.UserRepository
 import com.example.bolt2brutus.data.seed.DataSeeder
 import com.example.bolt2brutus.model.Race
@@ -22,6 +23,7 @@ class RaceViewModel(
     raceRepository: RaceRepository = RaceRepository(),
     private val raceAttemptRepository: RaceAttemptRepository = RaceAttemptRepository(),
     private val userRepository: UserRepository = UserRepository(),
+    private val statueVisitRepository: StatueVisitRepository = StatueVisitRepository(),
     dataSeeder: DataSeeder = DataSeeder(),
 ) : ViewModel() {
 
@@ -42,7 +44,7 @@ class RaceViewModel(
     init {
         viewModelScope.launch {
             try {
-                dataSeeder.seedIfEmpty()
+                dataSeeder.seedIfOutdated()
             } catch (e: Exception) {
                 _message.value = e.message
             }
@@ -54,13 +56,20 @@ class RaceViewModel(
         launchCatching {
             val user = userRepository.get(uid) ?: error("Profile not found")
             raceAttemptRepository.start(user, race)
+            statueVisitRepository.record(uid, race.startStatue)
             _message.value = "Started ${race.raceName}"
         }
     }
 
     // TODO: Replace with GPS arrival detection at the destination statue.
     fun finishRace(attempt: RaceAttempt) {
-        launchCatching { raceAttemptRepository.complete(attempt) }
+        val uid = uid ?: return
+        launchCatching {
+            raceAttemptRepository.complete(attempt)
+            races.value?.find { it.id == attempt.raceId }?.let { race ->
+                statueVisitRepository.record(uid, race.endStatue)
+            }
+        }
     }
 
     fun deleteAttempt(attempt: RaceAttempt) {

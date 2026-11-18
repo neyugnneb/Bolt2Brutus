@@ -14,6 +14,7 @@ import com.example.bolt2brutus.R
 import com.example.bolt2brutus.ui.race.RaceActivity
 import com.example.bolt2brutus.viewmodel.AuthUiState
 import com.example.bolt2brutus.viewmodel.AuthViewModel
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class LoginActivity : AppCompatActivity() {
 
@@ -54,13 +55,33 @@ class LoginActivity : AppCompatActivity() {
         authViewModel.uiState.observe(this) { state ->
             when (state) {
                 is AuthUiState.SignedIn -> openRaceScreen()
+                is AuthUiState.VerifyEmail -> {
+                    showVerifyEmailDialog(state)
+                    authViewModel.messageShown()
+                }
                 is AuthUiState.Error -> {
                     Toast.makeText(this, state.message, Toast.LENGTH_LONG).show()
-                    authViewModel.errorShown()
+                    authViewModel.messageShown()
                 }
                 else -> Unit
             }
         }
+    }
+
+    private fun showVerifyEmailDialog(state: AuthUiState.VerifyEmail) {
+        if (supportFragmentManager.findFragmentById(R.id.flFragment) is SignupFragment) {
+            showFragment(LoginFragment())
+        }
+        val builder = MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.verify_email_title)
+            .setPositiveButton(android.R.string.ok, null)
+        if (state.sent) {
+            builder.setMessage(getString(R.string.verify_email_sent, state.email))
+        } else {
+            builder.setMessage(getString(R.string.verify_email_needed, state.email))
+                .setNeutralButton(R.string.verify_email_resend) { _, _ -> authViewModel.resendVerification() }
+        }
+        builder.show()
     }
 
     private fun showFragment(fragment: Fragment) {
